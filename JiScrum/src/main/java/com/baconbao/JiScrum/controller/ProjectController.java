@@ -6,6 +6,11 @@ import com.baconbao.JiScrum.dto.project.ProjectCreateDTO;
 import com.baconbao.JiScrum.dto.project.ProjectDTO;
 import com.baconbao.JiScrum.dto.project.ProjectUpdateDTO;
 import com.baconbao.JiScrum.service.ProjectService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/projects")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Project Controller", description = "Manage project resources including CRUD operations")
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -33,6 +39,15 @@ public class ProjectController {
      * @return a ResponseEntity containing the created ProjectDTO wrapped in APIResponse
      */
     @PostMapping
+    @Operation(
+            summary = "Create a new project",
+            description = "Creates and saves a new project",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Project created successfully",
+                            content = @Content(schema = @Schema(implementation = ProjectDTO.class))),
+                    @ApiResponse(responseCode = "400", description = "Invalid input")
+            }
+    )
     public ResponseEntity<APIResponse<ProjectDTO>> createProject(@RequestBody ProjectCreateDTO dto,
                                                                  HttpServletRequest request) {
         log.info("Received request to create a new project");
@@ -55,6 +70,15 @@ public class ProjectController {
      * @return a ResponseEntity containing the ProjectDTO wrapped in APIResponse
      */
     @GetMapping("/{id}")
+    @Operation(
+            summary = "Get a project by ID",
+            description = "Retrieves a project based on the specified ID",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Project retrieved successfully",
+                            content = @Content(schema = @Schema(implementation = ProjectDTO.class))),
+                    @ApiResponse(responseCode = "404", description = "Project not found")
+            }
+    )
     public ResponseEntity<APIResponse<ProjectDTO>> getProjectById(@PathVariable Integer id,
                                                                   HttpServletRequest request) {
         log.info("Retrieving project with ID: {}", id);
@@ -78,6 +102,15 @@ public class ProjectController {
      * @return a ResponseEntity containing the updated ProjectDTO wrapped in APIResponse
      */
     @PutMapping("/{id}")
+    @Operation(
+            summary = "Update an existing project",
+            description = "Updates the project identified by the given ID",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Project updated successfully",
+                            content = @Content(schema = @Schema(implementation = ProjectDTO.class))),
+                    @ApiResponse(responseCode = "404", description = "Project not found")
+            }
+    )
     public ResponseEntity<APIResponse<ProjectDTO>> updateProject(@PathVariable Integer id,
                                                                  @RequestBody ProjectUpdateDTO dto,
                                                                  HttpServletRequest request) {
@@ -101,6 +134,14 @@ public class ProjectController {
      * @return a ResponseEntity confirming the successful deletion
      */
     @DeleteMapping("/{id}")
+    @Operation(
+            summary = "Delete a project by ID",
+            description = "Deletes the project identified by the given ID",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Project deleted successfully"),
+                    @ApiResponse(responseCode = "404", description = "Project not found")
+            }
+    )
     public ResponseEntity<APIResponse<Void>> deleteProject(@PathVariable Integer id,
                                                            HttpServletRequest request) {
         log.info("Deleting project with ID: {}", id);
