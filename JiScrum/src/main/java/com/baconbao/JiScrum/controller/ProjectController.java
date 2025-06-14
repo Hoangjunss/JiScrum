@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,7 +50,7 @@ public class ProjectController {
             }
     )
     public ResponseEntity<APIResponse<ProjectDTO>> createProject(@RequestBody ProjectCreateDTO dto,
-                                                                 HttpServletRequest request) {
+                                                                 HttpServletRequest request) throws BadRequestException {
         log.info("Received request to create a new project");
         ProjectDTO projectDTO = projectService.createProject(dto);
 
