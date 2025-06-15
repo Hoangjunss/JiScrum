@@ -51,7 +51,7 @@ public class ProjectController {
     )
     public ResponseEntity<APIResponse<ProjectDTO>> createProject(@RequestBody ProjectCreateDTO dto,
                                                                  HttpServletRequest request) throws BadRequestException {
-        log.info("Received request to create a new project");
+        log.info("[ProjectController] Received request to create a new project");
         ProjectDTO projectDTO = projectService.createProject(dto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new APIResponse<>(
@@ -82,7 +82,7 @@ public class ProjectController {
     )
     public ResponseEntity<APIResponse<ProjectDTO>> getProjectById(@PathVariable Integer id,
                                                                   HttpServletRequest request) {
-        log.info("Retrieving project with ID: {}", id);
+        log.info("[ProjectController] Retrieving project with ID: {}", id);
         ProjectDTO projectDTO = projectService.getProjectById(id);
 
         return ResponseEntity.ok(new APIResponse<>(
@@ -115,7 +115,7 @@ public class ProjectController {
     public ResponseEntity<APIResponse<ProjectDTO>> updateProject(@PathVariable Integer id,
                                                                  @RequestBody ProjectUpdateDTO dto,
                                                                  HttpServletRequest request) {
-        log.info("Updating project with ID: {}", id);
+        log.info("[ProjectController] Updating project with ID: {}", id);
         ProjectDTO projectDTO = projectService.updateProject(id, dto);
 
         return ResponseEntity.ok(new APIResponse<>(
@@ -145,7 +145,7 @@ public class ProjectController {
     )
     public ResponseEntity<APIResponse<Void>> deleteProject(@PathVariable Integer id,
                                                            HttpServletRequest request) {
-        log.info("Deleting project with ID: {}", id);
+        log.info("[ProjectController] Deleting project with ID: {}", id);
         projectService.deleteProject(id);
 
         return ResponseEntity.ok(new APIResponse<>(
