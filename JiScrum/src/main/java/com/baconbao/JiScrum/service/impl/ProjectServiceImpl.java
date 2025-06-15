@@ -122,6 +122,25 @@ public class ProjectServiceImpl implements ProjectService {
 
         return ProjectMapper.toDTO(project);
     }
+    /**
+     * Retrieves the Project entity by ID.
+     * Used internally when the complete Project object is needed.
+     *
+     * @param id the ID of the project to retrieve
+     * @return the corresponding Project entity
+     * @throws ResourceNotFoundException if the project is not found
+     */
+    @Override
+    public Project getProjectEntityById(Integer id) {
+        log.info("Fetching project entity with ID: {}", id);
+
+        return projectRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Project with ID {} not found when fetching entity", id);
+                    return new ResourceNotFoundException("Project not found with id: " + id);
+                });
+    }
+
 
     /**
      * Delete a project by ID.
