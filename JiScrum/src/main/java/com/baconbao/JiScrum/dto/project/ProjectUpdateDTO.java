@@ -5,6 +5,8 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ProjectUpdateDTO {
     private String name;

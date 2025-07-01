@@ -5,6 +5,8 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ProjectDTO {
     private Integer id;
