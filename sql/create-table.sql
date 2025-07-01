@@ -22,3 +22,29 @@ CREATE TABLE Project(
     project_start_date DATETIME COMMENT 'Project start at',
     project_end_date DATETIME COMMENT 'Project end at'
 )
+
+CREATE TABLE Issue(
+    issue_id INT PRIMARY KEY COMMENT 'Issue ID',
+    issue_title VARCHAR(200) COMMENT 'Title issue',
+    issue_description TEXT COMMENT 'Description issue',
+    issue_priority ENUM('LOWEST', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST') DEFAULT 'MEDIUM' COMMENT 'Priority tiên',
+    issue_status ENUM('TO_DO', 'IN_PROGRESS', 'REVIEW', 'DONE') DEFAULT 'TO_DO' COMMENT 'Status issue',
+    issue_project_id INT COMMENT 'Foreign key to Project',
+    issue_reporter_id INT COMMENT 'Member create issue',
+    issue_assignee_id INT COMMENT 'Member assignee',
+    issue_deadline DATETIME COMMENT 'Deadline finish',
+    issue_created_at DATETIME DEFAULT COMMENT 'On create',
+    issue_updated_at DATETIME DEFAULT COMMENT 'Last update',
+    issue_resolved_at DATETIME COMMENT 'On complete'
+);
+
+CREATE TABLE Attachment(
+    attachment_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'Attachment ID',
+    attachment_name VARCHAR(255) NOT NULL COMMENT 'File name',
+    attachment_path VARCHAR(500) NOT NULL COMMENT 'File path',
+    attachment_size BIGINT COMMENT 'File size(bytes)',
+    attachment_type VARCHAR(50) COMMENT 'Type file (MIME type)',
+    attachment_issue_id INT NOT NULL COMMENT 'Foreign key to Issue',
+    attachment_uploaded_by INT NOT NULL COMMENT 'Upload by someone',
+    attachment_uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Date upload'
+);
