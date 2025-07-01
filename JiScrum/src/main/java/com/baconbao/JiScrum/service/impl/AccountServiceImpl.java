@@ -12,6 +12,8 @@ import com.baconbao.JiScrum.utils.IdGenerator;
 import com.baconbao.JiScrum.utils.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -66,6 +68,19 @@ public class AccountServiceImpl implements AccountService {
         account.setPassword(passwordEncoder.encode(accountCreateDTO.getUsername()));
 
         return AccountMapper.toDTO(accountRepository.save(account));
+    }
+
+    @Override
+    public Account getPrincipal() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new IllegalArgumentException("Unauthorized");
+        }
+
+        Account account = (Account) authentication.getPrincipal();
+
+        log.info("User principal: {}", account);
+        return account;
     }
 
     private boolean usernameExists(String username) {

@@ -115,13 +115,18 @@ public class MemberServiceImpl implements MemberService {
     public MemberDTO getMemberById(Integer id) {
         log.info("Retrieving member with ID: {}", id);
 
-        Member member = memberRepository.findById(id)
+        Member member = getMemberEntityById(id);
+
+        return MemberMapper.toDTO(member);
+    }
+
+    @Override
+    public Member getMemberEntityById(Integer id) {
+        return memberRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Member with ID {} not found", id);
                     return new ResourceNotFoundException("Member not found with id: " + id);
                 });
-
-        return MemberMapper.toDTO(member);
     }
 
     /**
