@@ -51,7 +51,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         Project project = ProjectMapper.toEntity(dto);
-        project.setCreateAt(LocalDateTime.now());
+        project.setCreatedAt(LocalDateTime.now());
 
         Project saved = projectRepository.save(project);
         log.debug("Project saved successfully with ID: {}", saved.getId());

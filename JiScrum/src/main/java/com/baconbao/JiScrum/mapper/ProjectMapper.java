@@ -5,6 +5,8 @@ import com.baconbao.JiScrum.dto.project.ProjectCreateDTO;
 import com.baconbao.JiScrum.dto.project.ProjectDTO;
 import com.baconbao.JiScrum.model.Project;
 
+import java.time.LocalDateTime;
+
 /**
  * Mapper class for converting between Project entity and its DTOs.
  */
@@ -23,7 +25,7 @@ public class ProjectMapper {
                 .id(project.getId())
                 .name(project.getName())
                 .description(project.getDescription())
-                .createAt(project.getCreateAt())
+                .createAt(LocalDateTime.now())
                 .ownerId(project.getOwnerId())
                 .status(project.getStatus().name()) // convert enum to String
                 .startDate(project.getStartDate())
