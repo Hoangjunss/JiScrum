@@ -24,7 +24,6 @@ public class AccountMapper {
         return AccountDTO.builder()
                 .id(account.getId())
                 .username(account.getUsername())
-                .password(account.getPassword())
                 .email(account.getEmail())
                 .createdAt(account.getCreatedAt())
                 .status(account.getStatus())
