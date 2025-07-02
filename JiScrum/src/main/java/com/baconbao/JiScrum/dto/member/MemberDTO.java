@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -15,7 +16,7 @@ public class MemberDTO {
     private Integer id;
     private Integer projectId;
     private String role;
-    private LocalDate joinedAt;
-    private LocalDate leftAt;
+    private LocalDateTime joinedAt;
+    private LocalDateTime leftAt;
     private Boolean status;
 }

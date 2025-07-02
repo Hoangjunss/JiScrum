@@ -9,11 +9,14 @@ import com.baconbao.JiScrum.mapper.MemberMapper;
 import com.baconbao.JiScrum.model.Member;
 import com.baconbao.JiScrum.model.Project;
 import com.baconbao.JiScrum.repository.MemberRepository;
+import com.baconbao.JiScrum.service.AccountService;
 import com.baconbao.JiScrum.service.MemberService;
 import com.baconbao.JiScrum.service.ProjectService;
+import com.baconbao.JiScrum.utils.IdGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 /**
@@ -21,12 +24,20 @@ import org.springframework.stereotype.Service;
  * Handles business logic related to Member operations.
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
     private final ProjectService projectService;
+    private final AccountService accountService;
+
+    private MemberServiceImpl(MemberRepository memberRepository,
+                              @Lazy ProjectService projectService,
+                              AccountService accountService) {
+        this.memberRepository = memberRepository;
+        this.projectService = projectService;
+        this.accountService = accountService;
+    }
 
     /**
      * Create a new member using the provided DTO.
@@ -49,11 +60,6 @@ public class MemberServiceImpl implements MemberService {
             throw new BadRequestException("Role must not be null or empty");
         }
 
-        if (dto.getJoinedAt() == null) {
-            log.error("Joined date is required but was null");
-            throw new BadRequestException("Joined date must not be null");
-        }
-
         if (dto.getStatus() == null) {
             log.error("Status is required but was null");
             throw new BadRequestException("Status must not be null");
@@ -62,6 +68,9 @@ public class MemberServiceImpl implements MemberService {
         Project project = projectService.getProjectEntityById(dto.getProjectId());
 
         Member member = MemberMapper.toEntity(dto, project);
+        member.setId(IdGenerator.getGenerationId());
+        member.setAccount(accountService.getPrincipal());
+
         Member saved = memberRepository.save(member);
         log.debug("Member created successfully with ID: {}", saved.getId());
 
@@ -88,12 +97,6 @@ public class MemberServiceImpl implements MemberService {
 
         if (dto.getRole() != null) {
             member.setRole(Member.Role.valueOf(dto.getRole()));
-        }
-        if (dto.getJoinedAt() != null) {
-            member.setJoinedAt(dto.getJoinedAt());
-        }
-        if (dto.getLeftAt() != null) {
-            member.setLeftAt(dto.getLeftAt());
         }
         if (dto.getStatus() != null) {
             member.setStatus(dto.getStatus());

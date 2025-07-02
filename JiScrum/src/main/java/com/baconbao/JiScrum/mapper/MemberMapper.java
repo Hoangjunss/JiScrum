@@ -5,6 +5,9 @@ import com.baconbao.JiScrum.dto.member.MemberDTO;
 import com.baconbao.JiScrum.model.Member;
 import com.baconbao.JiScrum.model.Project;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 /**
  * Utility class for converting between Member entity and DTOs.
  */
@@ -22,9 +25,8 @@ public class MemberMapper {
         return Member.builder()
                 .project(project)
                 .role(Member.Role.valueOf(dto.getRole()))
-                .joinedAt(dto.getJoinedAt())
-                .leftAt(dto.getLeftAt())
                 .status(dto.getStatus())
+                .joinedAt(LocalDateTime.now())
                 .build();
     }
 

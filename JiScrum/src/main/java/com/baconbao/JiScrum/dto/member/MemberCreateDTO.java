@@ -17,9 +17,5 @@ public class MemberCreateDTO {
 
     private String role;
 
-    private LocalDate joinedAt;
-
-    private LocalDate leftAt;
-
     private Boolean status;
 }

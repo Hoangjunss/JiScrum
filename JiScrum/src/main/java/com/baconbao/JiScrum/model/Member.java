@@ -1,9 +1,11 @@
 package com.baconbao.JiScrum.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Builder
 @Data
@@ -19,6 +21,7 @@ public class Member {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_project_id", nullable = false)
+    @JsonBackReference
     private Project project;
 
     @Enumerated(EnumType.STRING)
@@ -26,13 +29,18 @@ public class Member {
     private Role role;
 
     @Column(name = "member_joined_at", nullable = false)
-    private LocalDate joinedAt;
+    private LocalDateTime joinedAt;
 
     @Column(name = "member_left_at")
-    private LocalDate leftAt;
+    private LocalDateTime leftAt;
 
     @Column(nullable = false, name = "member_status")
     private Boolean status;
+
+    @ManyToOne
+    @JoinColumn(name = "member_account_id")
+    @JsonBackReference
+    private Account account;
 
     public enum Role {
         PROJECT_MANAGER,
