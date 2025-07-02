@@ -18,7 +18,8 @@ CREATE TABLE Member(
     member_role ENUM('PROJECT_MANAGER', 'SCRUM_MASTER', 'PRODUCT_OWNER', 'DEVELOPER', 'TESTER', 'VIEWER') COMMENT 'Role member',
     member_joined_at DATETIME COMMENT 'Date join member',
     member_left_at DATETIME COMMENT 'Date left member',
-    member_status BOOLEAN COMMENT 'Status member'
+    member_status BOOLEAN COMMENT 'Status member',
+    member_account_id INT COMMENT 'Foriegn key to Account'
 )
 
 CREATE TABLE Project(
