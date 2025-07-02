@@ -26,7 +26,6 @@ public class ProjectMapper {
                 .name(project.getName())
                 .description(project.getDescription())
                 .createAt(LocalDateTime.now())
-                .ownerId(project.getOwnerId())
                 .status(project.getStatus().name()) // convert enum to String
                 .startDate(project.getStartDate())
                 .endDate(project.getEndDate())
@@ -46,8 +45,10 @@ public class ProjectMapper {
         return Project.builder()
                 .name(dto.getName())
                 .description(dto.getDescription())
-                .ownerId(dto.getOwnerId())
+                .status(Project.ProjectStatus.PLANNING)
                 .startDate(dto.getStartDate())
+                .endDate(dto.getEndDate())
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 

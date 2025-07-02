@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 public class ProjectUpdateDTO {
     private String name;
     private String description;
-    private Long ownerId;
     private Project.ProjectStatus status;
     private LocalDateTime startDate;
     private LocalDateTime endDate;

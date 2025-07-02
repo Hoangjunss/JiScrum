@@ -13,7 +13,7 @@ public class ProjectDTO {
     private String name;
     private String description;
     private LocalDateTime createAt;
-    private Long ownerId;
+    private Integer ownerId;
     private String status;
     private LocalDateTime startDate;
     private LocalDateTime endDate;

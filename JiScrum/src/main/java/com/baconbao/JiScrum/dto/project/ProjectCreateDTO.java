@@ -15,6 +15,6 @@ import java.time.LocalDateTime;
 public class ProjectCreateDTO {
     private String name;
     private String description;
-    private Long ownerId;
     private LocalDateTime startDate;
+    private LocalDateTime endDate;
 }

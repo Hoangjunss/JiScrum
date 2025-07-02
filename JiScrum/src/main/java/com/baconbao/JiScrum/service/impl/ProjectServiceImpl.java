@@ -1,17 +1,31 @@
 package com.baconbao.JiScrum.service.impl;
 
 
+import com.baconbao.JiScrum.dto.member.MemberCreateDTO;
+import com.baconbao.JiScrum.dto.member.MemberDTO;
 import com.baconbao.JiScrum.dto.project.ProjectCreateDTO;
 import com.baconbao.JiScrum.dto.project.ProjectDTO;
+import com.baconbao.JiScrum.dto.project.ProjectFilterRequest;
 import com.baconbao.JiScrum.dto.project.ProjectUpdateDTO;
 import com.baconbao.JiScrum.exception.ResourceNotFoundException;
 import com.baconbao.JiScrum.mapper.ProjectMapper;
+import com.baconbao.JiScrum.model.Account;
+import com.baconbao.JiScrum.model.Member;
 import com.baconbao.JiScrum.model.Project;
 import com.baconbao.JiScrum.repository.ProjectRepository;
+import com.baconbao.JiScrum.service.AccountService;
+import com.baconbao.JiScrum.service.MemberService;
 import com.baconbao.JiScrum.service.ProjectService;
+import com.baconbao.JiScrum.specification.ProjectSpecification;
+import com.baconbao.JiScrum.utils.IdGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,11 +37,19 @@ import java.time.LocalDateTime;
  * Handles business logic related to Project operations.
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class ProjectServiceImpl implements ProjectService {
-
     private final ProjectRepository projectRepository;
+    private final MemberService memberService;
+    private final AccountService accountService;
+
+    private ProjectServiceImpl( ProjectRepository projectRepository,
+                                @Lazy MemberService memberService,
+                                AccountService accountService) {
+        this.projectRepository = projectRepository;
+        this.memberService = memberService;
+        this.accountService = accountService;
+    }
     /**
      * Create a new project using the provided DTO.
      * Validates input and persists the entity.
@@ -45,18 +67,26 @@ public class ProjectServiceImpl implements ProjectService {
             throw new BadRequestException("Project name must not be null or empty");
         }
 
-        if (dto.getOwnerId() == null) {
-            log.error("Owner ID is required but was null");
-            throw new BadRequestException("Owner ID must not be null");
-        }
-
         Project project = ProjectMapper.toEntity(dto);
-        project.setCreatedAt(LocalDateTime.now());
+        project.setId(IdGenerator.getGenerationId());
 
         Project saved = projectRepository.save(project);
         log.debug("Project saved successfully with ID: {}", saved.getId());
 
-        return ProjectMapper.toDTO(saved);
+        MemberCreateDTO memberCreateDTO = new MemberCreateDTO();
+        memberCreateDTO.setProjectId(project.getId());
+        memberCreateDTO.setRole("PROJECT_MANAGER");
+        memberCreateDTO.setStatus(true);
+
+        MemberDTO memberDTO = memberService.createMember(memberCreateDTO);
+        Member member = memberService.getMemberEntityById(memberDTO.getId());
+
+        saved.setId(saved.getId());
+        saved.setOwner(member);
+
+        Project savedProject = projectRepository.save(saved);
+
+        return ProjectMapper.toDTO(savedProject);
     }
 
     /**
@@ -83,9 +113,6 @@ public class ProjectServiceImpl implements ProjectService {
         }
         if (dto.getDescription() != null) {
             project.setDescription(dto.getDescription());
-        }
-        if (dto.getOwnerId() != null) {
-            project.setOwnerId(dto.getOwnerId());
         }
         if (dto.getStatus() != null) {
             project.setStatus(dto.getStatus());
@@ -160,5 +187,21 @@ public class ProjectServiceImpl implements ProjectService {
 
         projectRepository.delete(project);
         log.info("Project with ID {} deleted successfully", id);
+    }
+
+    @Override
+    public Page<ProjectDTO> filterProjects(ProjectFilterRequest req, int page, int size) {
+        Account me = accountService.getPrincipal();
+
+        Specification<Project> spec = Specification
+                .where(ProjectSpecification.belongsToAccount(me))
+                .and(ProjectSpecification.hasName(req.getName()))
+                .and(ProjectSpecification.hasStatus(req.getStatus()))
+                .and(ProjectSpecification.hasOwnerId(req.getOwnerId() ? me.getId() : null));
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        return projectRepository.findAll(spec, pageable)
+                .map(ProjectMapper::toDTO);
     }
 }

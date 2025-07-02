@@ -26,8 +26,9 @@ public class Project {
     @Column(name = "project_create_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "project_owner_id")
-    private Long ownerId;
+    @OneToOne
+    @JoinColumn(name = "project_owner_id")
+    private Member owner;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "project_status", columnDefinition =
