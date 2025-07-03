@@ -195,9 +195,9 @@ public class ProjectServiceImpl implements ProjectService {
 
         Specification<Project> spec = Specification
                 .where(ProjectSpecification.belongsToAccount(me))
-                .and(ProjectSpecification.hasName(req.getName()))
-                .and(ProjectSpecification.hasStatus(req.getStatus()))
-                .and(ProjectSpecification.hasOwnerId(req.getOwnerId() ? me.getId() : null));
+                .and(ProjectSpecification.hasName(req.getName() != null ? req.getName() : null))
+                .and(ProjectSpecification.hasStatus(req.getStatus() != null ? req.getStatus() : null))
+                .and(ProjectSpecification.hasOwnerId(req.getOwnerId() != null && req.getOwnerId() ? me.getId() : null));
 
         Pageable pageable = PageRequest.of(page, size);
 

@@ -1,9 +1,11 @@
 package com.baconbao.JiScrum.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Builder
 @Data
@@ -40,6 +42,11 @@ public class Project {
 
     @Column(name = "project_end_date")
     private LocalDateTime endDate;
+
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Member> members;
+
 
     public enum ProjectStatus {
         PLANNING,

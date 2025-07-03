@@ -19,7 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/attachments")
+@RequestMapping("/attachments")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Attachment Controller",

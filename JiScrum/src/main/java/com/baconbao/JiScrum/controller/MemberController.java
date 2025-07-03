@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
  * Provides endpoints to create, retrieve, update, and delete member resources.
  */
 @RestController
-@RequestMapping("/api/members")
+@RequestMapping("/members")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Member Controller", description = "Manage member resources including CRUD operations")

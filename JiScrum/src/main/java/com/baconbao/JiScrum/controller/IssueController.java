@@ -21,7 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/issues")
+@RequestMapping("/issues")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Issue Controller", description = "CRUD operations for Issue resources")

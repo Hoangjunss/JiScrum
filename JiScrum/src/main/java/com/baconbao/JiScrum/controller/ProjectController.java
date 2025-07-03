@@ -6,6 +6,7 @@ import com.baconbao.JiScrum.dto.project.ProjectCreateDTO;
 import com.baconbao.JiScrum.dto.project.ProjectDTO;
 import com.baconbao.JiScrum.dto.project.ProjectFilterRequest;
 import com.baconbao.JiScrum.dto.project.ProjectUpdateDTO;
+import com.baconbao.JiScrum.model.Project;
 import com.baconbao.JiScrum.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,9 +15,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +30,7 @@ import org.springframework.web.bind.annotation.*;
  * Provides endpoints to create, retrieve, update, and delete project resources.
  */
 @RestController
-@RequestMapping("/api/projects")
+@RequestMapping("/projects")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Project Controller", description = "Manage project resources including CRUD operations")
@@ -160,41 +163,43 @@ public class ProjectController {
         ));
     }
 
-    @PostMapping("/filter")
+    @GetMapping("/filter")
     @Operation(
             summary     = "Filter projects",
             description = "Filters projects by name, status or owner with pagination.",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Filter conditions",
-                    required    = true,
-                    content     = @Content(schema =
-                    @Schema(implementation = ProjectFilterRequest.class))),
             parameters  = {
-                    @Parameter(name = "page", description = "Page number (0‑based)", example = "0"),
-                    @Parameter(name = "size", description = "Page size", example = "10")
+                    @Parameter(name = "name",    description = "Search by project name (contains, case‑insensitive)", example = "CRM"),
+                    @Parameter(name = "status",  description = "Project status", schema = @Schema(implementation = Project.ProjectStatus.class), example = "IN_PROGRESS"),
+                    @Parameter(name = "owner",   description = "true = chỉ lấy project bạn sở hữu", example = "true"),
+                    @Parameter(name = "page",    description = "Page number (0‑based)", example = "0"),
+                    @Parameter(name = "size",    description = "Page size", example = "10")
             },
-            responses   = @ApiResponse(responseCode = "200",
-                    description  = "Filter successful",
-                    content      = @Content(schema =
-                    @Schema(implementation = Page.class)))
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description  = "Filter successful",
+                            content      = @Content(schema = @Schema(implementation = Page.class))
+                    )
+            }
     )
     public ResponseEntity<APIResponse<Page<ProjectDTO>>> filterProjects(
-            @RequestBody ProjectFilterRequest req,
+            @ParameterObject @Valid ProjectFilterRequest filter,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             HttpServletRequest request) {
 
-        log.info("[ProjectController] Filter projects: {}, page={}, size={}", req, page, size);
+        log.info("[ProjectController] Filter projects: {}, page={}, size={}", filter, page, size);
 
-        Page<ProjectDTO> result = projectService.filterProjects(req, page, size);
+        Page<ProjectDTO> projectDTOS = projectService.filterProjects(filter, page, size);
 
         return ResponseEntity.ok(
                 new APIResponse<>(
                         true,
                         "Projects filtered successfully",
-                        result,
+                        projectDTOS,
                         null,
                         request.getRequestURI()
-                ));
+                )
+        );
     }
 }
