@@ -3,9 +3,11 @@ package com.baconbao.JiScrum.controller;
 import com.baconbao.JiScrum.dto.APIResponse;
 import com.baconbao.JiScrum.dto.issue.IssueCreateDTO;
 import com.baconbao.JiScrum.dto.issue.IssueDTO;
+import com.baconbao.JiScrum.dto.issue.IssueFilter;
 import com.baconbao.JiScrum.dto.issue.IssueUpdateDTO;
 import com.baconbao.JiScrum.service.IssueService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -120,5 +123,42 @@ public class IssueController {
                 null,
                 request.getRequestURI()
         ));
+    }
+
+    @PostMapping("/filter")
+    @Operation(
+            summary     = "Filter issues",
+            description = "Filters issues by status, severity, assignee, etc., with pagination.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Issue filter conditions",
+                    required    = true,
+                    content     = @Content(schema = @Schema(implementation = IssueFilter.class))
+            ),
+            parameters  = {
+                    @Parameter(name = "page", description = "Page number (0‑based)", example = "0"),
+                    @Parameter(name = "size", description = "Page size", example = "10")
+            },
+            responses   = @ApiResponse(
+                    responseCode = "200",
+                    description  = "Issues filtered",
+                    content      = @Content(schema =
+                    @Schema(implementation = Page.class)))
+    )
+    public ResponseEntity<APIResponse<Page<IssueDTO>>> filterIssues(
+            @RequestBody IssueFilter issueFilter,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request) {
+
+        log.info("[IssueController] Filter issues: {}, page={}, size={}", issueFilter, page, size);
+
+        Page<IssueDTO> result = issueService.filter(issueFilter, page, size);
+
+        return ResponseEntity.ok(
+                new APIResponse<>(true,
+                        "Issues filtered successfully",
+                        result,
+                        null,
+                        request.getRequestURI()));
     }
 }

@@ -21,8 +21,6 @@ public class IssueCreateDTO {
 
     private Integer projectId;
 
-    private Integer reporterId;
-
     private Integer assigneeId;
 
     private LocalDateTime deadline;
