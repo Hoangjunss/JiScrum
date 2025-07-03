@@ -150,4 +150,10 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.delete(member);
         log.info("Member with ID {} deleted successfully", id);
     }
+
+    @Override
+    public Member getMemberByProjectAndAccount(Integer projectId, Integer account) {
+        return memberRepository.findByProjectIdAndAccountId(projectId, account)
+                .orElseThrow();
+    }
 }

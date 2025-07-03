@@ -15,4 +15,5 @@ public interface MemberService {
     MemberDTO getMemberById(Integer id);
     Member getMemberEntityById(Integer id);
     void deleteMember(Integer id);
+    Member getMemberByProjectAndAccount(Integer projectId, Integer account);
 }
