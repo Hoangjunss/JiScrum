@@ -3,6 +3,7 @@ package com.baconbao.JiScrum.service.impl;
 
 import com.baconbao.JiScrum.dto.member.MemberCreateDTO;
 import com.baconbao.JiScrum.dto.member.MemberDTO;
+import com.baconbao.JiScrum.dto.member.MemberFilter;
 import com.baconbao.JiScrum.dto.member.MemberUpdateDTO;
 import com.baconbao.JiScrum.exception.ResourceNotFoundException;
 import com.baconbao.JiScrum.mapper.MemberMapper;
@@ -12,11 +13,16 @@ import com.baconbao.JiScrum.repository.MemberRepository;
 import com.baconbao.JiScrum.service.AccountService;
 import com.baconbao.JiScrum.service.MemberService;
 import com.baconbao.JiScrum.service.ProjectService;
+import com.baconbao.JiScrum.specification.MemberSpecifications;
 import com.baconbao.JiScrum.utils.IdGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 /**
@@ -155,5 +161,17 @@ public class MemberServiceImpl implements MemberService {
     public Member getMemberByProjectAndAccount(Integer projectId, Integer account) {
         return memberRepository.findByProjectIdAndAccountId(projectId, account)
                 .orElseThrow();
+    }
+
+    @Override
+    public Page<MemberDTO> filter(MemberFilter memberFilter, int page, int size) {
+
+        Specification<Member> memberSpecification = MemberSpecifications.withFilter(memberFilter);
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Member> members = memberRepository.findAll(memberSpecification, pageable);
+
+        return members.map(MemberMapper::toDTO);
     }
 }

@@ -3,9 +3,11 @@ package com.baconbao.JiScrum.controller;
 import com.baconbao.JiScrum.dto.APIResponse;
 import com.baconbao.JiScrum.dto.member.MemberCreateDTO;
 import com.baconbao.JiScrum.dto.member.MemberDTO;
+import com.baconbao.JiScrum.dto.member.MemberFilter;
 import com.baconbao.JiScrum.dto.member.MemberUpdateDTO;
 import com.baconbao.JiScrum.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -154,5 +157,41 @@ public class MemberController {
                 null,
                 request.getRequestURI()
         ));
+    }
+
+    @PostMapping("/filter")
+    @Operation(
+            summary     = "Filter members",
+            description = "Filters members by name, role, status, etc. with pagination.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Member filter conditions",
+                    required    = true,
+                    content     = @Content(schema = @Schema(implementation = MemberFilter.class))
+            ),
+            parameters  = {
+                    @Parameter(name = "page", description = "Page number (0‑based)", example = "0"),
+                    @Parameter(name = "size", description = "Page size", example = "10")
+            },
+            responses   = @ApiResponse(
+                    responseCode = "200",
+                    description  = "Members filtered successfully",
+                    content      = @Content(schema = @Schema(implementation = Page.class)))
+    )
+    public ResponseEntity<APIResponse<Page<MemberDTO>>> filterMembers(
+            @RequestBody MemberFilter memberFilter,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request) {
+
+        log.info("[MemberController] Filter members: {}, page={}, size={}", memberFilter, page, size);
+
+        Page<MemberDTO> result = memberService.filter(memberFilter, page, size);
+
+        return ResponseEntity.ok(
+                new APIResponse<>(true,
+                        "Members filtered successfully",
+                        result,
+                        null,
+                        request.getRequestURI()));
     }
 }
