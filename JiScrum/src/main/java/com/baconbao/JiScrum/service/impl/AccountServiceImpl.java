@@ -36,6 +36,7 @@ public class AccountServiceImpl implements AccountService {
                     .orElseThrow(() -> new IllegalArgumentException("Account not found"));
 
             log.info("Account: {}", account);
+            log.info("formLoginDTO: {}", formLoginDTO);
 
             if (!passwordEncoder.matches(formLoginDTO.getPassword(), account.getPassword())) {
                 throw new IllegalArgumentException("Wrong password");
@@ -65,7 +66,7 @@ public class AccountServiceImpl implements AccountService {
 
         Account account = AccountMapper.toEntity(accountCreateDTO);
         account.setId(IdGenerator.getGenerationId());
-        account.setPassword(passwordEncoder.encode(accountCreateDTO.getUsername()));
+        account.setPassword(passwordEncoder.encode(accountCreateDTO.getPassword()));
 
         return AccountMapper.toDTO(accountRepository.save(account));
     }
